@@ -6,7 +6,7 @@ import pytest
 from jobflow.settings import JobflowSettings
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_jobflow_settings(memory_jobstore):
     """Set the UID_TYPE to "ulid" to make sure the documents can be sorted.
 
