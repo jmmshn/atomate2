@@ -11,7 +11,7 @@ Copyright (c) 2022, Materials Virtual Lab.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 from ase.io import Trajectory as AseTrajectory
 from ase.stress import voigt_6_to_full_3x3_stress
@@ -40,22 +40,22 @@ _task_doc_translation_keys = {
 class AseResult(BaseModel):
     """Schema to store outputs in AseTaskDocument."""
 
-    final_mol_or_struct: Optional[Union[Structure, Molecule]] = Field(
+    final_mol_or_struct: Union[Structure, Molecule] | None = Field(
         None, description="The molecule or structure in the final trajectory frame."
     )
 
-    trajectory: Optional[Union[AseTrajectory, PmgTrajectory]] = Field(
+    trajectory: Union[AseTrajectory, PmgTrajectory] | None = Field(
         None, description="The relaxation or molecular dynamics trajectory."
     )
 
-    is_force_converged: Optional[bool] = Field(
+    is_force_converged: bool | None = Field(
         None,
         description=(
             "Whether the calculation is converged with respect to interatomic forces."
         ),
     )
 
-    energy_downhill: Optional[bool] = Field(
+    energy_downhill: bool | None = Field(
         None,
         description=(
             "Whether the final trajectory frame has lower total "
@@ -63,11 +63,11 @@ class AseResult(BaseModel):
         ),
     )
 
-    dir_name: Optional[Union[str, Path]] = Field(
+    dir_name: Union[str, Path] | None = Field(
         None, description="The directory where the calculation was run"
     )
 
-    elapsed_time: Optional[float] = Field(
+    elapsed_time: float | None = Field(
         None, description="The time taken to run the ASE calculation in seconds."
     )
 
@@ -90,13 +90,11 @@ class AseObject(ValueEnum):
 class AseBaseModel(BaseModel):
     """Base document class for ASE input and output."""
 
-    mol_or_struct: Optional[Union[Structure, Molecule]] = Field(
+    mol_or_struct: Union[Structure, Molecule] | None = Field(
         None, description="The molecule or structure at this step."
     )
-    structure: Optional[Structure] = Field(
-        None, description="The structure at this step."
-    )
-    molecule: Optional[Molecule] = Field(None, description="The molecule at this step.")
+    structure: Structure | None = Field(None, description="The structure at this step.")
+    molecule: Molecule | None = Field(None, description="The molecule at this step.")
 
     def model_post_init(self, _context: Any) -> None:
         """Establish alias to structure and molecule fields."""
@@ -109,14 +107,12 @@ class AseBaseModel(BaseModel):
 class IonicStep(AseBaseModel):
     """Document defining the information at each ionic step."""
 
-    energy: Optional[float] = Field(None, description="The free energy.")
-    forces: Optional[list[list[float]]] = Field(
+    energy: float | None = Field(None, description="The free energy.")
+    forces: list[list[float]] | None = Field(
         None, description="The forces on each atom."
     )
-    stress: Optional[Matrix3D] = Field(None, description="The stress on the lattice.")
-    magmoms: Optional[list[float]] = Field(
-        None, description="On-site magnetic moments."
-    )
+    stress: Matrix3D | None = Field(None, description="The stress on the lattice.")
+    magmoms: list[float] | None = Field(None, description="On-site magnetic moments.")
 
 
 class OutputDoc(AseBaseModel):
@@ -130,7 +126,7 @@ class OutputDoc(AseBaseModel):
         "in units of eV/atom.",
     )
 
-    forces: Optional[list[Vector3D]] = Field(
+    forces: list[Vector3D] | None = Field(
         None,
         description=(
             "The force on each atom in units of eV/A for the final molecule "
@@ -140,7 +136,7 @@ class OutputDoc(AseBaseModel):
 
     # NOTE: units for stresses were converted to kbar (* -10 from standard output)
     #       to comply with MP convention
-    stress: Optional[Matrix3D] = Field(
+    stress: Matrix3D | None = Field(
         None, description="The stress on the cell in units of kbar (in Voigt notation)."
     )
 
@@ -150,7 +146,7 @@ class OutputDoc(AseBaseModel):
         None, description="Step-by-step trajectory of the relaxation."
     )
 
-    elapsed_time: Optional[float] = Field(
+    elapsed_time: float | None = Field(
         None, description="The time taken to run the ASE calculation in seconds."
     )
 
@@ -162,7 +158,7 @@ class OutputDoc(AseBaseModel):
 class InputDoc(AseBaseModel):
     """The inputs used to run this job."""
 
-    relax_cell: Optional[bool] = Field(
+    relax_cell: bool | None = Field(
         None,
         description="Whether cell lattice was allowed to change during relaxation.",
     )
@@ -173,16 +169,16 @@ class InputDoc(AseBaseModel):
             "Refines the symmetry of the initial molecule or structure."
         ),
     )
-    symprec: Optional[float] = Field(
+    symprec: float | None = Field(
         None, description="Tolerance for symmetry finding in case of fix_symmetry."
     )
     steps: int = Field(
         None, description="Maximum number of steps allowed during relaxation."
     )
-    relax_kwargs: Optional[dict] = Field(
+    relax_kwargs: dict | None = Field(
         None, description="Keyword arguments that passed to the relaxer function."
     )
-    optimizer_kwargs: Optional[dict] = Field(
+    optimizer_kwargs: dict | None = Field(
         None, description="Keyword arguments passed to the relaxer's optimizer."
     )
 
@@ -205,25 +201,25 @@ class AseStructureTaskDoc(StructureMetadata):
         description="name of the ASE calculator used in the calculation.",
     )
 
-    dir_name: Optional[str] = Field(
+    dir_name: str | None = Field(
         None, description="Directory where the ASE calculations are performed."
     )
 
-    included_objects: Optional[list[AseObject]] = Field(
+    included_objects: list[AseObject] | None = Field(
         None, description="list of ASE objects included with this task document"
     )
-    objects: Optional[dict[AseObject, Any]] = Field(
+    objects: dict[AseObject, Any] | None = Field(
         None, description="ASE objects associated with this task"
     )
 
-    is_force_converged: Optional[bool] = Field(
+    is_force_converged: bool | None = Field(
         None,
         description=(
             "Whether the calculation is converged with respect to interatomic forces."
         ),
     )
 
-    energy_downhill: Optional[bool] = Field(
+    energy_downhill: bool | None = Field(
         None,
         description=(
             "Whether the final trajectory frame has lower total "
@@ -231,7 +227,7 @@ class AseStructureTaskDoc(StructureMetadata):
         ),
     )
 
-    tags: Optional[list[str]] = Field(None, description="List of tags for the task.")
+    tags: list[str] | None = Field(None, description="List of tags for the task.")
 
     @classmethod
     def from_ase_task_doc(
@@ -271,25 +267,25 @@ class AseMoleculeTaskDoc(MoleculeMetadata):
         description="name of the ASE calculator used in the calculation.",
     )
 
-    dir_name: Optional[str] = Field(
+    dir_name: str | None = Field(
         None, description="Directory where the ASE calculations are performed."
     )
 
-    included_objects: Optional[list[AseObject]] = Field(
+    included_objects: list[AseObject] | None = Field(
         None, description="list of ASE objects included with this task document"
     )
-    objects: Optional[dict[AseObject, Any]] = Field(
+    objects: dict[AseObject, Any] | None = Field(
         None, description="ASE objects associated with this task"
     )
 
-    is_force_converged: Optional[bool] = Field(
+    is_force_converged: bool | None = Field(
         None,
         description=(
             "Whether the calculation is converged with respect to interatomic forces."
         ),
     )
 
-    energy_downhill: Optional[bool] = Field(
+    energy_downhill: bool | None = Field(
         None,
         description=(
             "Whether the total energy in the final frame "
@@ -297,7 +293,7 @@ class AseMoleculeTaskDoc(MoleculeMetadata):
         ),
     )
 
-    tags: Optional[list[str]] = Field(None, description="List of tags for the task.")
+    tags: list[str] | None = Field(None, description="List of tags for the task.")
 
 
 class AseTaskDoc(AseBaseModel):
@@ -314,25 +310,25 @@ class AseTaskDoc(AseBaseModel):
         description="name of the ASE calculator used for this job.",
     )
 
-    dir_name: Optional[str] = Field(
+    dir_name: str | None = Field(
         None, description="Directory where the ASE calculations are performed."
     )
 
-    included_objects: Optional[list[AseObject]] = Field(
+    included_objects: list[AseObject] | None = Field(
         None, description="list of ASE objects included with this task document"
     )
-    objects: Optional[dict[AseObject, Any]] = Field(
+    objects: dict[AseObject, Any] | None = Field(
         None, description="ASE objects associated with this task"
     )
 
-    is_force_converged: Optional[bool] = Field(
+    is_force_converged: bool | None = Field(
         None,
         description=(
             "Whether the calculation is converged with respect to interatomic forces."
         ),
     )
 
-    energy_downhill: Optional[bool] = Field(
+    energy_downhill: bool | None = Field(
         None,
         description=(
             "Whether the total energy in the final frame "
@@ -340,7 +336,7 @@ class AseTaskDoc(AseBaseModel):
         ),
     )
 
-    tags: Optional[list[str]] = Field(None, description="A list of tags for the task.")
+    tags: list[str] | None = Field(None, description="A list of tags for the task.")
 
     @classmethod
     def from_ase_compatible_result(
