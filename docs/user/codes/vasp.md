@@ -282,7 +282,6 @@ A Grüneisen workflow for VASP can be started as follows:
 from atomate2.vasp.flows.gruneisen import GruneisenMaker
 from pymatgen.core.structure import Structure
 
-
 structure = Structure(
     lattice=[[0, 2.13, 2.13], [2.13, 0, 2.13], [2.13, 2.13, 0]],
     species=["Mg", "O"],
@@ -305,7 +304,6 @@ The following script allows you to start the default workflow for VASP with some
 ```python
 from atomate2.vasp.flows.qha import QhaMaker
 from pymatgen.core.structure import Structure
-
 
 structure = Structure(
     lattice=[[0, 2.13, 2.13], [2.13, 0, 2.13], [2.13, 2.13, 0]],
@@ -330,7 +328,6 @@ You can start the workflow as follows:
 ```python
 from atomate2.vasp.flows.eos import EosMaker
 from pymatgen.core.structure import Structure
-
 
 structure = Structure(
     lattice=[[0, 2.13, 2.13], [2.13, 0, 2.13], [2.13, 2.13, 0]],
